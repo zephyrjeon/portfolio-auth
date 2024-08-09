@@ -8,9 +8,7 @@ export class AppServer {
   private httpServer: http.Server | null = null;
   private app = express();
 
-  constructor(private configs: IAppConfigs) {
-    // TODO
-  }
+  constructor(private configs: IAppConfigs) {}
 
   async startServer() {
     console.log('Starting up.....');
@@ -33,18 +31,6 @@ export class AppServer {
   }
 
   private useAppRoutes() {
-    // new AppRoutes(this.app).routes();
-
-    this.app.get('/', (req, res) => {
-      // const { name = 'user' } = req.query;
-      res.send(`Hello!`);
-    });
-
-    this.app.get('/api/v1/health', (req, res) => {
-      res
-        .status(200)
-        // .json({ message: 'User created successfully!!' })
-        .send('Auth service is healthy and OK.');
-    });
+    new AppRoutes(this.app).routes();
   }
 }
