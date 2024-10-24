@@ -31,7 +31,7 @@ export class Container<TOKEN = string> {
     this.registry.set(token, provision);
   }
 
-  public resolve<T>(token: TOKEN) {
+  public resolve<T>(token: TOKEN): T {
     const provision = this.registry.get(token);
 
     if (!provision) throw new Error(`${token} is not registered`);
