@@ -1,14 +1,23 @@
 import cors from 'cors';
 import express from 'express';
 import http from 'http';
-import { IAppConfigs } from './configs/config.interface';
+import { DI } from './di/di';
 import { AppRoutes } from './routes/AppRoutes';
 
 export class AppServer {
   private httpServer: http.Server | null = null;
   private app = express();
 
-  constructor(private configs: IAppConfigs) {}
+  constructor(private di: DI) {
+    process.on('SIGINT', async () => {
+      console.log('on SIGINT');
+      process.exit(0);
+    });
+  }
+
+  get configs() {
+    return this.di.configs;
+  }
 
   async startServer() {
     console.log('Starting up.....');

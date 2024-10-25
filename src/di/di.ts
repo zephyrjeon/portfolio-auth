@@ -1,3 +1,4 @@
+import { IAppConfigs } from '../configs/config.interface';
 import { appConfigs } from '../configs/getAppConfigs';
 import { Container } from './Container';
 
@@ -14,7 +15,7 @@ export class DI {
     return DI.instance;
   }
 
-  resolve<T>(token: DI_KEY) {
+  resolve<T>(token: DI_KEY): T {
     return this.container.resolve<T>(token);
   }
 
@@ -22,6 +23,10 @@ export class DI {
     this.container.register(DI_KEY.CONFIGS, { value: appConfigs });
 
     return this;
+  }
+
+  get configs() {
+    return this.resolve<IAppConfigs>(DI_KEY.CONFIGS);
   }
 }
 
