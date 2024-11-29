@@ -38,7 +38,7 @@ export class Container<TOKEN = string> {
 
     if ('value' in provision) return (provision as UseValue).value;
 
-    if ('class' in provision) {
+    if ('constructor' in provision) {
       const { constructor, deps, scope } = provision as UseClass<T, TOKEN>;
 
       if (scope === 'singleton' && !!this.instances.get(token)) {
