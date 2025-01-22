@@ -24,6 +24,7 @@ export class AppServer {
 
     this.useMiddlewares();
     this.useAppRoutes();
+    await this.di.db.connect();
 
     this.httpServer = this.app.listen({ port: this.configs.PORT }, () => {
       console.log(`🚀 Server ready at ${this.configs.PORT}`);

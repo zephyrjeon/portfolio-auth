@@ -1,5 +1,6 @@
 import { IAppConfigs } from '../configs/config.interface';
 import { appConfigs } from '../configs/getAppConfigs';
+import { DB } from '../db/db';
 import { Container } from './Container';
 
 export class DI {
@@ -21,12 +22,21 @@ export class DI {
 
   registerDeps() {
     this.container.register(DI_KEY.CONFIGS, { value: appConfigs });
+    this.container.register(DI_KEY.DB, {
+      constructor: DB,
+      deps: [DI_KEY.CONFIGS],
+      scope: 'singleton',
+    });
 
     return this;
   }
 
   get configs() {
     return this.resolve<IAppConfigs>(DI_KEY.CONFIGS);
+  }
+
+  get db() {
+    return this.resolve<DB>(DI_KEY.DB);
   }
 }
 
