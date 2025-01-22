@@ -1,4 +1,8 @@
-export interface IAppConfigs extends IBaseConfigs, IJWTConfigs, IURLConfigs {}
+export interface IAppConfigs
+  extends IBaseConfigs,
+    IJWTConfigs,
+    IMongoConfigs,
+    IURLConfigs {}
 
 export interface IBaseConfigs {
   PORT: number;
@@ -12,4 +16,9 @@ export interface IJWTConfigs {
 
 export interface IURLConfigs {
   PORTFOLIO_AUTH_URL: string;
+}
+
+export interface IMongoConfigs {
+  MONGO_URL: string;
+  MONGO_DB_NAME: string;
 }
