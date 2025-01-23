@@ -24,7 +24,10 @@ export class Container<TOKEN = string> {
       throw new Error(`${token} is already registered`);
     }
 
-    if ('deps' in provision && this.isCyclic(token, provision.deps)) {
+    if (
+      'deps' in provision &&
+      this.isCyclic(token, provision.deps, this.registry)
+    ) {
       throw new Error(`Cycle detected with the new token "${token}"`);
     }
 
@@ -58,13 +61,19 @@ export class Container<TOKEN = string> {
     throw new Error(`${token} is not resolved`);
   }
 
-  // DFS to detect a cycle
-  private isCyclic(token: TOKEN, deps: TOKEN[]) {
+  // Detect a cycle if registry have one with the new token and deps being added
+  // Registry and tokens are represented as graph and nodes, and pointers will traverse in a fasion of DFS
+  // A pointer is where checking is to happen and consists of node and visited
+  // Node is where a pointer is and visited is a list of nodes where the pointer has visited so far
+  // Cycle exists when node in a pointer appears in its visited
+  private isCyclic(
+    token: TOKEN,
+    deps: TOKEN[],
+    registry: Map<TOKEN, Provision<any, TOKEN>>
+  ) {
     const check = (
-      // Pointers of stack where search is to happen on each route to leaf
-      stack: { node: TOKEN; visited: Set<TOKEN> }[],
-      // Graph as a map where key is a node and value is its adjcent nodes
-      graph: Map<TOKEN, TOKEN[]>
+      stack: { node: TOKEN; visited: Set<TOKEN> }[], // Stack of pointers
+      graph: Map<TOKEN, TOKEN[]> // key is a node and value is its adjcent nodes
     ) => {
       if (stack.length === 0) return false;
 
@@ -83,7 +92,7 @@ export class Container<TOKEN = string> {
 
     const graph = new Map<TOKEN, TOKEN[]>([[token, deps]]);
 
-    this.registry.forEach((provision, token) => {
+    registry.forEach((provision, token) => {
       const adj = 'deps' in provision ? provision.deps : [];
       graph.set(token, adj);
     });
