@@ -1,4 +1,4 @@
-import { Db, MongoClient, ServerApiVersion } from 'mongodb';
+import { Db, MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
 import { IAppConfigs } from '../configs/config.interface';
 
 export class DB {
@@ -38,5 +38,9 @@ export class DB {
 
   async disconnect() {
     await this.mongoClient.close();
+  }
+
+  toObjectId(id: string) {
+    return new ObjectId(id);
   }
 }
