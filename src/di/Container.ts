@@ -1,7 +1,10 @@
+export enum SCOPE {
+  SINGLETON = 'SINGLETON',
+  TRANSIENT = 'TRANSIENT',
+}
+
 // https://www.typescriptlang.org/docs/handbook/2/functions.html#construct-signatures
 type Constructor<T = any> = { new (...args: any[]): T };
-
-type Scope = 'singleton' | 'transient';
 
 type UseValue = {
   value: any;
@@ -10,7 +13,7 @@ type UseValue = {
 type UseClass<T, TOKEN = string> = {
   constructor: Constructor<T>;
   deps: TOKEN[];
-  scope: Scope;
+  scope: SCOPE;
 };
 
 type Provision<T, TOKEN = string> = UseValue | UseClass<T, TOKEN>;
@@ -44,14 +47,14 @@ export class Container<TOKEN = string> {
     if ('constructor' in provision) {
       const { constructor, deps, scope } = provision as UseClass<T, TOKEN>;
 
-      if (scope === 'singleton' && !!this.instances.get(token)) {
+      if (scope === SCOPE.SINGLETON && !!this.instances.get(token)) {
         return this.instances.get(token);
       }
 
       const args: unknown[] = deps.map((dep) => this.resolve(dep));
       const instance = new constructor(...args);
 
-      if (scope === 'singleton') {
+      if (scope === SCOPE.SINGLETON) {
         this.instances.set(token, instance);
       }
 
