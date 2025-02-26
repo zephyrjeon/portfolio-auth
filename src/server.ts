@@ -3,6 +3,7 @@ import express from 'express';
 import http from 'http';
 import { DI } from './di/di';
 import { AppRoutes } from './routes/AppRoutes';
+import cookieParser from 'cookie-parser';
 
 export class AppServer {
   private httpServer: http.Server | null = null;
@@ -38,6 +39,7 @@ export class AppServer {
   private useMiddlewares() {
     this.app.use(cors({}));
     this.app.use(express.json());
+    this.app.use(cookieParser(this.configs.COOKIE_SECRET));
   }
 
   private useAppRoutes() {
