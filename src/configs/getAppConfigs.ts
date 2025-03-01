@@ -1,7 +1,8 @@
 import * as dotenv from 'dotenv';
 import path from 'path';
-import { COMMON_SERVER_CONFIGS } from './config.common';
-import { PROD_SERVER_CONFIGS } from './config.production';
+import { getCommonServerConfigs } from './config.common';
+import { getProdServerConfigs } from './config.production';
+import { getTestServerConfigs } from './config.testing';
 
 function getAppConfigs() {
   if (!process.env.NODE_ENV) {
@@ -10,19 +11,21 @@ function getAppConfigs() {
 
   const envPath = path.join(__dirname, `../../.env`);
 
-  const { parsed, error } = dotenv.config({ path: envPath });
+  const { error } = dotenv.config({ path: envPath });
 
   if (error) {
     throw new Error(JSON.stringify(error));
   }
 
   if (process.env.NODE_ENV === 'production') {
-    return Object.assign(PROD_SERVER_CONFIGS, parsed);
+    return getProdServerConfigs();
+  } else if (process.env.NODE_ENV === 'test') {
+    return getTestServerConfigs();
   } else {
-    return Object.assign(COMMON_SERVER_CONFIGS, parsed);
+    return getCommonServerConfigs();
   }
 }
 
 export const appConfigs = getAppConfigs();
 
-console.log('App Configs: ', appConfigs);
+console.log(`Environment ${process.env.NODE_ENV} App Configs: `, appConfigs);

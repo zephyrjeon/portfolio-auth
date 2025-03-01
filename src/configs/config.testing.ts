@@ -1,26 +1,25 @@
 import { getCommonServerConfigs } from './config.common';
 import {
-  IAppConfigs,
   IBaseConfigs,
   IJWTConfigs,
   IMongoConfigs,
   IURLConfigs,
 } from './config.interface';
 
-export const getProdServerConfigs = () => {
+export const getTestServerConfigs = () => {
   const BASE_CONFIGS: IBaseConfigs = {
-    PORT: parseInt(process.env.PORT!),
-    COOKIE_SECRET: process.env.COOKIE_SECRET!,
+    PORT: 3000,
+    COOKIE_SECRET: 'test',
   };
 
   const JWT_CONFIGS: IJWTConfigs = {
-    JWT_SECRET: process.env.JWT_SECRET!,
+    JWT_SECRET: 'test',
     JWT_EXPERATION_TIME: 24 * 60 * 60,
   };
 
   const MONGO_CONFIGS: IMongoConfigs = {
-    MONGO_URL: process.env.MONGO_URL!,
-    MONGO_DB_NAME: process.env.MONGO_DB_NAME!,
+    MONGO_URL: process.env.TEST_MONGO_URL!,
+    MONGO_DB_NAME: process.env.TEST_MONGO_DB_NAME!,
   };
 
   const URL_CONFIGS: IURLConfigs = {
