@@ -7,7 +7,7 @@ import cookieParser from 'cookie-parser';
 
 export class AppServer {
   private httpServer: http.Server | null = null;
-  private app = express();
+  app = express();
 
   constructor(private di: DI) {
     process.on('SIGINT', async () => {
@@ -33,6 +33,7 @@ export class AppServer {
   }
 
   async stop() {
+    await this.di.db.disconnect();
     this.httpServer?.close?.();
   }
 
