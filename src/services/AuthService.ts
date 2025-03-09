@@ -1,7 +1,11 @@
 import { randomBytes, scryptSync, timingSafeEqual } from 'crypto';
+import { CookieOptions, Response } from 'express';
+import * as jwt from 'jsonwebtoken';
 import { DI } from '../di/di';
+import { IJWTPayload } from '../interfaces/interfaces';
 import { IAccountRepository } from '../repositories/AccountRepository';
 import { CreateAccountInput } from '../schemas/createAccountInput';
+import { SigninInput } from '../schemas/signinInput';
 
 export class AuthService {
   constructor(private di: DI, private accountRepo: IAccountRepository) {}
@@ -38,5 +42,56 @@ export class AuthService {
       new Uint8Array(storedPasswordBuffer),
       new Uint8Array(suppliedPasswordBuffer)
     );
+  }
+
+  async signJWT(
+    payload: string | Buffer | object,
+    secret: jwt.Secret,
+    options: jwt.SignOptions = {}
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      jwt.sign(payload, secret, options, (err, token) => {
+        if (token) {
+          resolve(token);
+        } else {
+          reject(err || 'Unknown JWT sign error');
+        }
+      });
+    });
+  }
+
+  async verifyJWT(token: string, secret: jwt.Secret) {
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, secret, (err, payload) => {
+        if (payload) {
+          resolve(payload);
+        } else {
+          reject(err || 'Unknown JWT verify error');
+        }
+      });
+    });
+  }
+
+  async createToken(payload: IJWTPayload) {
+    return this.signJWT(payload, this.di.configs.JWT_SECRET, {
+      expiresIn: this.di.configs.JWT_EXPERATION_TIME,
+    });
+  }
+
+  setTokenInCookie(
+    res: Response,
+    token: string,
+    options: CookieOptions = {
+      signed: true,
+      secure: true, // inaccessible to JavaScript
+      httpOnly: true, // only sent to the server with an encrypted request over the HTTPS protocol.
+      maxAge: 24 * 60 * 60 * 1000,
+    }
+  ) {
+    return res.cookie('TOKEN', token, options);
+  }
+
+  clearTokenInCookie(res: Response) {
+    return res.clearCookie('TOKEN');
   }
 }
