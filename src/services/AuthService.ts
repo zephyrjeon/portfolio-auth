@@ -94,4 +94,20 @@ export class AuthService {
   clearTokenInCookie(res: Response) {
     return res.clearCookie('TOKEN');
   }
+
+  async signin(input: SigninInput) {
+    const { email, password } = this.di.validator.signinInput(input);
+    const account = await this.accountRepo.findOneByEmail(email);
+
+    if (!account) throw new Error('Account not found');
+
+    const authenticated = await this.comparePassword(
+      account.password,
+      password
+    );
+
+    if (!authenticated) throw new Error('Password incorrect');
+
+    return account;
+  }
 }
